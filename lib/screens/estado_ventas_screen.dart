@@ -236,7 +236,7 @@ class _EstadoVentasScreenState extends State<EstadoVentasScreen> {
                                     children: [
                                       const Icon(
                                         Icons.person,
-                                        size: 16,
+                                        size: 18,
                                         color: Colors.grey,
                                       ),
                                       const SizedBox(width: 8),
@@ -246,7 +246,7 @@ class _EstadoVentasScreenState extends State<EstadoVentasScreen> {
                                               ? pedido.cliente
                                               : 'Cliente no especificado',
                                           style: const TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 24,
                                             fontWeight: FontWeight.w600,
                                             color: Colors.black87,
                                           ),
