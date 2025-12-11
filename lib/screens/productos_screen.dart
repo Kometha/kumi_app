@@ -4,6 +4,7 @@ import '../services/producto_service.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 import 'registro_producto_screen.dart';
+import 'estado_ventas_screen.dart';
 
 class ProductosScreen extends StatefulWidget {
   const ProductosScreen({super.key});
@@ -108,7 +109,9 @@ class _ProductosScreenState extends State<ProductosScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error al eliminar producto: ${resultado['error']}'),
+              content: Text(
+                'Error al eliminar producto: ${resultado['error']}',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -169,43 +172,44 @@ class _ProductosScreenState extends State<ProductosScreen> {
                           ),
                         )
                       : _productos.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.inventory_2_outlined,
-                                    size: 64,
-                                    color: Colors.grey[400],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'No hay productos disponibles',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.inventory_2_outlined,
+                                size: 64,
+                                color: Colors.grey[400],
                               ),
-                            )
-                          : RefreshIndicator(
-                              onRefresh: _cargarProductos,
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(16),
-                                itemCount: _productos.length,
-                        itemBuilder: (context, index) {
-                          final producto = _productos[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: _ProductoCard(
-                              producto: producto,
-                              onEliminar: () => _eliminarProducto(producto.id),
-                            ),
-                          );
-                        },
+                              const SizedBox(height: 16),
+                              Text(
+                                'No hay productos disponibles',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey[600],
+                                ),
                               ),
-                            ),
+                            ],
+                          ),
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _cargarProductos,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: _productos.length,
+                            itemBuilder: (context, index) {
+                              final producto = _productos[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: _ProductoCard(
+                                  producto: producto,
+                                  onEliminar: () =>
+                                      _eliminarProducto(producto.id),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                 ),
                 // Botón Registrar fijo en la parte inferior (solo si no está cargando)
                 if (!_isLoading)
@@ -304,10 +308,7 @@ class _ProductosScreenState extends State<ProductosScreen> {
                   const SizedBox(height: 4),
                   Text(
                     '@${user!.username}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ],
@@ -327,15 +328,18 @@ class _ProductosScreenState extends State<ProductosScreen> {
                     Navigator.pop(context);
                   },
                 ),
-                // Aquí puedes agregar más opciones del menú en el futuro
-                // ListTile(
-                //   leading: const Icon(Icons.category),
-                //   title: const Text('Categorías'),
-                //   onTap: () {
-                //     Navigator.pop(context);
-                //     // Navegar a categorías
-                //   },
-                // ),
+                ListTile(
+                  leading: const Icon(Icons.category),
+                  title: const Text('Estado de Ventas'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const EstadoVentasScreen(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -363,10 +367,7 @@ class _ProductoCard extends StatelessWidget {
   final Producto producto;
   final VoidCallback onEliminar;
 
-  const _ProductoCard({
-    required this.producto,
-    required this.onEliminar,
-  });
+  const _ProductoCard({required this.producto, required this.onEliminar});
 
   String _formatearPrecio(double precio) {
     return 'L. ${precio.toStringAsFixed(2)}';
@@ -376,9 +377,7 @@ class _ProductoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: Colors.white,
       child: Stack(
         children: [
@@ -398,7 +397,8 @@ class _ProductoCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 // Categoría
-                if (producto.categoria != null && producto.categoria!.nombre != null)
+                if (producto.categoria != null &&
+                    producto.categoria!.nombre != null)
                   Text(
                     producto.categoria!.nombre!,
                     style: TextStyle(
@@ -497,4 +497,3 @@ class _ProductoCard extends StatelessWidget {
     );
   }
 }
-
