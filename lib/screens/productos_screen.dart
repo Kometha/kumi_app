@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/producto.dart';
 import '../services/producto_service.dart';
-import '../services/auth_service.dart';
-import 'login_screen.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/app_drawer.dart';
 import 'registro_producto_screen.dart';
-import 'estado_ventas_screen.dart';
 
 class ProductosScreen extends StatefulWidget {
   const ProductosScreen({super.key});
@@ -15,7 +14,7 @@ class ProductosScreen extends StatefulWidget {
 
 class _ProductosScreenState extends State<ProductosScreen> {
   final ProductoService _productoService = ProductoService();
-  final AuthService _authService = AuthService();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Producto> _productos = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -120,28 +119,17 @@ class _ProductosScreenState extends State<ProductosScreen> {
     }
   }
 
-  String _formatearPrecio(double precio) {
-    return 'L. ${precio.toStringAsFixed(2)}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
-        title: const Text('Productos'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.black87),
-            onPressed: _cargarProductos,
-            tooltip: 'Actualizar',
-          ),
-        ],
+      appBar: CustomAppBar(
+        title: 'Productos',
+        onReload: _cargarProductos,
+        scaffoldKey: _scaffoldKey,
       ),
-      drawer: _buildDrawer(context),
+      drawer: const AppDrawer(currentRoute: '/productos'),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -261,104 +249,6 @@ class _ProductosScreenState extends State<ProductosScreen> {
                   ),
               ],
             ),
-    );
-  }
-
-  Widget _buildDrawer(BuildContext context) {
-    final user = _authService.currentUser;
-    final displayName = user?.nombre ?? user?.username ?? 'Usuario';
-
-    return Drawer(
-      backgroundColor: Colors.white,
-      child: Column(
-        children: [
-          // Header del drawer
-          Container(
-            padding: const EdgeInsets.only(
-              top: 40,
-              bottom: 20,
-              left: 16,
-              right: 16,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.grey[200],
-                  radius: 30,
-                  child: Text(
-                    displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  displayName,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[900],
-                  ),
-                ),
-                if (user?.username != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    '@${user!.username}',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          // Opciones del menú
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.inventory_2),
-                  title: const Text('Productos'),
-                  selected: true,
-                  selectedTileColor: Colors.grey[200],
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.category),
-                  title: const Text('Estado de Ventas'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const EstadoVentasScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          // Botón de cerrar sesión
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Cerrar Sesión'),
-            onTap: () async {
-              Navigator.pop(context);
-              await _authService.logout();
-              if (context.mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const LoginPage()),
-                );
-              }
-            },
-          ),
-        ],
-      ),
     );
   }
 }
