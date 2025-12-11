@@ -93,6 +93,268 @@ class _EstadoVentasScreenState extends State<EstadoVentasScreen> {
     ).format(cantidad);
   }
 
+  IconData _getEstadoIcon(String estado) {
+    switch (estado.toLowerCase()) {
+      case 'pendiente':
+        return Icons.access_time;
+      case 'en proceso':
+        return Icons.sync;
+      case 'completado':
+      case 'completada':
+      case 'pagado':
+        return Icons.check_circle;
+      case 'cancelado':
+      case 'cancelada':
+        return Icons.cancel;
+      default:
+        return Icons.info;
+    }
+  }
+
+  Future<void> _mostrarModalEditarPedido(Pedido pedido) async {
+    try {
+      // Obtener estados disponibles
+      final estados = await _ventaService.getEstadosPedido();
+
+      // Obtener el ID del estado actual del pedido
+      final estadoActualId = pedido.item.estadoId;
+
+      // Filtrar estados: excluir el estado actual
+      final estadosDisponibles = estados
+          .where((estado) => estado.id != estadoActualId)
+          .toList();
+
+      if (!mounted) return;
+
+      await showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header con título y botón cerrar
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Editar Pedido',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Cliente y monto
+                  Text(
+                    '${pedido.cliente.isNotEmpty ? pedido.cliente : 'Cliente no especificado'} • ${_formatearMoneda(pedido.total)}',
+                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 24),
+                  // Título de sección
+                  const Text(
+                    'Cambiar estado del pedido:',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Estado actual (no seleccionable)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getEstadoColor(pedido.estado),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${pedido.estado} (Actual)',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Estados disponibles
+                  ...estadosDisponibles.map((estado) {
+                    final estadoColor = _getEstadoColor(estado.nombre);
+                    final estadoIcon = _getEstadoIcon(estado.nombre);
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // Actualizar estado
+                            final resultado = await _ventaService
+                                .actualizarEstadoPedido(
+                                  pedidoId: pedido.item.id,
+                                  nuevoEstadoId: estado.id,
+                                );
+
+                            if (!mounted) return;
+
+                            Navigator.of(dialogContext).pop();
+
+                            if (resultado['success'] == true) {
+                              // Actualizar solo este pedido en la lista localmente
+                              // sin necesidad de recargar todos los pedidos
+                              setState(() {
+                                final index = _pedidos.indexWhere(
+                                  (p) => p.item.id == pedido.item.id,
+                                );
+                                if (index != -1) {
+                                  // Crear un nuevo objeto Pedido con el estado actualizado
+                                  final pedidoActualizado = Pedido(
+                                    cliente: pedido.cliente,
+                                    codigoPedido: pedido.codigoPedido,
+                                    canal: pedido.canal,
+                                    fecha: pedido.fecha,
+                                    total: pedido.total,
+                                    estado: estado.nombre, // Nuevo estado
+                                    item: ItemPedido(
+                                      id: pedido.item.id,
+                                      codigoPedido: pedido.item.codigoPedido,
+                                      clienteId: pedido.item.clienteId,
+                                      canalId: pedido.item.canalId,
+                                      estadoId: estado.id, // Nuevo estado ID
+                                      fechaPedido: pedido.item.fechaPedido,
+                                      total: pedido.item.total,
+                                      notas: pedido.item.notas,
+                                      createdAt: pedido.item.createdAt,
+                                      updatedAt: pedido.item.updatedAt,
+                                      nombreCliente: pedido.item.nombreCliente,
+                                      telefonoCliente:
+                                          pedido.item.telefonoCliente,
+                                      subtotalProductos:
+                                          pedido.item.subtotalProductos,
+                                      totalComisionesFinanciamiento: pedido
+                                          .item
+                                          .totalComisionesFinanciamiento,
+                                      totalFactura: pedido.item.totalFactura,
+                                      totalComisionesMetodos:
+                                          pedido.item.totalComisionesMetodos,
+                                      montoNetoRecibido:
+                                          pedido.item.montoNetoRecibido,
+                                      costoEnvio: pedido.item.costoEnvio,
+                                      necesitaEnvio: pedido.item.necesitaEnvio,
+                                      direccionCliente:
+                                          pedido.item.direccionCliente,
+                                      itemCliente: pedido.item.itemCliente,
+                                      itemCanal: pedido.item.itemCanal,
+                                      itemEstado: EstadoPedido(
+                                        id: estado.id,
+                                        nombre: estado.nombre,
+                                        activo: estado.activo,
+                                        createdAt: estado.createdAt,
+                                      ),
+                                    ),
+                                  );
+                                  _pedidos[index] = pedidoActualizado;
+                                }
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    resultado['message'] ??
+                                        'Estado actualizado',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Error: ${resultado['error'] ?? 'Error desconocido'}',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: estadoColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(estadoIcon, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                estado.nombre,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al cargar estados: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,7 +444,7 @@ class _EstadoVentasScreenState extends State<EstadoVentasScreen> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              // Por ahora no hace nada, como solicitaste
+                              _mostrarModalEditarPedido(pedido);
                             },
                             borderRadius: BorderRadius.circular(12),
                             child: Padding(
