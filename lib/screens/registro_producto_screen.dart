@@ -22,22 +22,22 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
   final _categoriaService = CategoriaService();
   final _storageService = StorageService();
   final _productoRegistroService = ProductoRegistroService();
-  
+
   int _pasoActual = 1;
   bool _guardandoProducto = false;
   final int _totalPasos = 5;
   Categoria? _categoriaSeleccionada;
   List<Categoria> _categorias = [];
   bool _cargandoCategorias = false;
-  
+
   // Paso 3: Cantidad
   int _cantidad = 10;
   final List<int> _opcionesCantidad = [1, 2, 3, 5, 10, 20];
-  
+
   // Paso 4: Costo
   final _costoUnitarioController = TextEditingController(text: '0.00');
   final _precioVentaController = TextEditingController(text: '0.00');
-  
+
   // Paso 5: Foto
   File? _imagenProducto;
   Uint8List? _imagenBytes;
@@ -109,7 +109,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
       // Validar que la cantidad sea mayor a 0
       if (_cantidad <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor selecciona una cantidad válida')),
+          const SnackBar(
+            content: Text('Por favor selecciona una cantidad válida'),
+          ),
         );
         return;
       }
@@ -117,17 +119,21 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
       // Validar que los precios sean válidos
       final costoUnitario = double.tryParse(_costoUnitarioController.text);
       final precioVenta = double.tryParse(_precioVentaController.text);
-      
+
       if (costoUnitario == null || costoUnitario <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor ingresa un costo unitario válido')),
+          const SnackBar(
+            content: Text('Por favor ingresa un costo unitario válido'),
+          ),
         );
         return;
       }
-      
+
       if (precioVenta == null || precioVenta <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor ingresa un precio de venta válido')),
+          const SnackBar(
+            content: Text('Por favor ingresa un precio de venta válido'),
+          ),
         );
         return;
       }
@@ -160,8 +166,12 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: _pasoActual >= 2 && _pasoActual <= 4 ? Colors.grey[900] : Colors.white,
-        foregroundColor: _pasoActual >= 2 && _pasoActual <= 4 ? Colors.white : Colors.black87,
+        backgroundColor: _pasoActual >= 2 && _pasoActual <= 4
+            ? Colors.grey[900]
+            : Colors.white,
+        foregroundColor: _pasoActual >= 2 && _pasoActual <= 4
+            ? Colors.white
+            : Colors.black87,
         elevation: 0,
         title: Text(_getTituloPaso()),
         actions: [
@@ -171,7 +181,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
               child: Text(
                 'Paso $_pasoActual/$_totalPasos',
                 style: TextStyle(
-                  color: _pasoActual >= 2 && _pasoActual <= 5 ? Colors.grey[400] : Colors.grey[600],
+                  color: _pasoActual >= 2 && _pasoActual <= 5
+                      ? Colors.grey[400]
+                      : Colors.grey[600],
                   fontSize: 14,
                 ),
               ),
@@ -187,9 +199,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                   child: FractionallySizedBox(
                     widthFactor: _pasoActual / _totalPasos,
                     alignment: Alignment.centerLeft,
-                    child: Container(
-                      color: Colors.grey[600],
-                    ),
+                    child: Container(color: Colors.grey[600]),
                   ),
                 ),
               )
@@ -225,7 +235,12 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                         onPressed: _anterior,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                          foregroundColor: const Color.fromARGB(
+                            255,
+                            255,
+                            255,
+                            255,
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -248,7 +263,12 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                       onPressed: _guardandoProducto ? null : _continuar,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                        foregroundColor: const Color.fromARGB(
+                          255,
+                          255,
+                          255,
+                          255,
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -261,7 +281,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : Row(
@@ -272,7 +294,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                                   const SizedBox(width: 8),
                                 ],
                                 Text(
-                                  _pasoActual < _totalPasos ? 'Continuar' : 'Registrar Producto',
+                                  _pasoActual < _totalPasos
+                                      ? 'Continuar'
+                                      : 'Registrar Producto',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -318,10 +342,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
       children: [
         Text(
           'Verifica o edita el nombre y descripción',
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 14,
-          ),
+          style: TextStyle(color: Colors.grey[600], fontSize: 14),
         ),
         const SizedBox(height: 24),
         // Campo Código de Producto
@@ -421,7 +442,8 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
               controller: _descripcionController,
               maxLines: 5,
               decoration: InputDecoration(
-                hintText: 'Describe el producto, su estado, características, etc.',
+                hintText:
+                    'Describe el producto, su estado, características, etc.',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
@@ -454,10 +476,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
       children: [
         const Text(
           'Selecciona categoría',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.black87),
         ),
         const SizedBox(height: 24),
         // Campo Categoría
@@ -490,7 +509,8 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        _categoriaSeleccionada?.nombre ?? 'Toca para seleccionar',
+                        _categoriaSeleccionada?.nombre ??
+                            'Toca para seleccionar',
                         style: TextStyle(
                           color: _categoriaSeleccionada != null
                               ? Colors.black87
@@ -499,10 +519,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.keyboard_arrow_down,
-                      color: Colors.grey[600],
-                    ),
+                    Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
                   ],
                 ),
               ),
@@ -531,10 +548,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                 children: [
                   const Text(
                     'Seleccionar Categoría',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -551,9 +565,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
               else if (_categorias.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Center(
-                    child: Text('No hay categorías disponibles'),
-                  ),
+                  child: Center(child: Text('No hay categorías disponibles')),
                 )
               else
                 Flexible(
@@ -562,13 +574,16 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                     itemCount: _categorias.length,
                     itemBuilder: (context, index) {
                       final categoria = _categorias[index];
-                      final isSelected = _categoriaSeleccionada?.id == categoria.id;
-                      
+                      final isSelected =
+                          _categoriaSeleccionada?.id == categoria.id;
+
                       return ListTile(
                         title: Text(
                           categoria.nombre ?? 'Sin nombre',
                           style: TextStyle(
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                         selected: isSelected,
@@ -595,10 +610,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
       children: [
         const Text(
           '¿Cuántas unidades tienes?',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.black87),
         ),
         const SizedBox(height: 24),
         // Campo Unidades (display grande)
@@ -648,7 +660,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
               itemBuilder: (context, index) {
                 final cantidad = _opcionesCantidad[index];
                 final isSelected = _cantidad == cantidad;
-                
+
                 return ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -670,7 +682,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                     '$cantidad',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 );
@@ -683,21 +697,19 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
   }
 
   Widget _buildPaso4() {
-    const double tasaCambioUSD_HNL = 26.338;
-    
+    const double tasacambiousdHnl = 26.338;
+
     // Calcular conversión a lempiras cuando cambia el costo
-    double costoEnDolares = double.tryParse(_costoUnitarioController.text) ?? 0.0;
-    double costoEnLempiras = costoEnDolares * tasaCambioUSD_HNL;
-    
+    double costoEnDolares =
+        double.tryParse(_costoUnitarioController.text) ?? 0.0;
+    double costoEnLempiras = costoEnDolares * tasacambiousdHnl;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Precio de compra o referencia',
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 14,
-          ),
+          style: TextStyle(color: Colors.grey[600], fontSize: 14),
         ),
         const SizedBox(height: 24),
         // Campo Costo unitario (en dólares)
@@ -715,7 +727,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
             const SizedBox(height: 8),
             TextField(
               controller: _costoUnitarioController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               onChanged: (value) {
                 setState(() {}); // Actualizar conversión cuando cambia el valor
               },
@@ -774,7 +788,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
             const SizedBox(height: 8),
             TextField(
               controller: _precioVentaController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               onChanged: (value) {
                 setState(() {}); // Actualizar margen cuando cambia el precio
               },
@@ -808,13 +824,16 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
             if (costoEnDolares > 0) ...[
               Builder(
                 builder: (context) {
-                  final precioVenta = double.tryParse(_precioVentaController.text) ?? 0.0;
+                  final precioVenta =
+                      double.tryParse(_precioVentaController.text) ?? 0.0;
                   double margenBruto = 0.0;
-                  
+
                   if (costoEnLempiras > 0 && precioVenta > 0) {
-                    margenBruto = ((precioVenta - costoEnLempiras) / costoEnLempiras) * 100;
+                    margenBruto =
+                        ((precioVenta - costoEnLempiras) / costoEnLempiras) *
+                        100;
                   }
-                  
+
                   if (margenBruto > 0) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 12),
@@ -930,16 +949,10 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(6),
                         child: kIsWeb && _imagenBytes != null
-                            ? Image.memory(
-                                _imagenBytes!,
-                                fit: BoxFit.cover,
-                              )
+                            ? Image.memory(_imagenBytes!, fit: BoxFit.cover)
                             : _imagenProducto != null
-                                ? Image.file(
-                                    _imagenProducto!,
-                                    fit: BoxFit.cover,
-                                  )
-                                : const SizedBox.shrink(),
+                            ? Image.file(_imagenProducto!, fit: BoxFit.cover)
+                            : const SizedBox.shrink(),
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -973,9 +986,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                 },
                 icon: const Icon(Icons.delete_outline, size: 18),
                 label: const Text('Eliminar foto'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.red,
-                ),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
               ),
             ],
           ],
@@ -1019,8 +1030,8 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                 'Descripción:',
                 _descripcionController.text.trim().isNotEmpty
                     ? (_descripcionController.text.trim().length > 30
-                        ? '${_descripcionController.text.trim().substring(0, 30)}...'
-                        : _descripcionController.text.trim())
+                          ? '${_descripcionController.text.trim().substring(0, 30)}...'
+                          : _descripcionController.text.trim())
                     : 'No especificada',
               ),
               const SizedBox(height: 12),
@@ -1029,10 +1040,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
                 _categoriaSeleccionada?.nombre ?? 'No seleccionada',
               ),
               const SizedBox(height: 12),
-              _buildResumenItem(
-                'Cantidad:',
-                '$_cantidad unidades',
-              ),
+              _buildResumenItem('Cantidad:', '$_cantidad unidades'),
               const SizedBox(height: 12),
               _buildResumenItem(
                 'Costo unitario:',
@@ -1068,10 +1076,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
         ),
       ],
@@ -1154,9 +1159,7 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al seleccionar imagen: $e'),
-          ),
+          SnackBar(content: Text('Error al seleccionar imagen: $e')),
         );
       }
     }
@@ -1178,7 +1181,10 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
           if (kIsWeb && _imagenBytes != null) {
             // En web, usar bytes directamente
             final extension = _imagenExtension ?? 'jpg';
-            imagenUrl = await _storageService.uploadImageBytes(_imagenBytes!, extension);
+            imagenUrl = await _storageService.uploadImageBytes(
+              _imagenBytes!,
+              extension,
+            );
           } else if (_imagenProducto != null) {
             // En móvil, usar File
             imagenUrl = await _storageService.uploadImage(_imagenProducto!);
@@ -1197,7 +1203,8 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
       }
 
       // Paso 2: Obtener valores numéricos
-      final costoUnitario = double.tryParse(_costoUnitarioController.text) ?? 0.0;
+      final costoUnitario =
+          double.tryParse(_costoUnitarioController.text) ?? 0.0;
       final precioVenta = double.tryParse(_precioVentaController.text) ?? 0.0;
 
       // Paso 3: Registrar producto con inventario y precio
@@ -1228,7 +1235,9 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error al registrar producto: ${resultado['error']}'),
+              content: Text(
+                'Error al registrar producto: ${resultado['error']}',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -1252,4 +1261,3 @@ class _RegistroProductoScreenState extends State<RegistroProductoScreen> {
     }
   }
 }
-

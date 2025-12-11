@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StorageService {
@@ -58,18 +57,21 @@ class StorageService {
       final extension = _obtenerExtension(imageFile.path);
       if (!_esFormatoValido(extension)) {
         throw Exception(
-            'Formato de imagen no válido. Solo se permiten: PNG, JPG, JPEG, HEIC, WEBP');
+          'Formato de imagen no válido. Solo se permiten: PNG, JPG, JPEG, HEIC, WEBP',
+        );
       }
 
       // Validar tamaño (máximo 5 MB)
       final esValido = await _validarTamanio(imageFile);
       if (!esValido) {
-        throw Exception('La imagen es demasiado grande. Máximo permitido: 5 MB');
+        throw Exception(
+          'La imagen es demasiado grande. Máximo permitido: 5 MB',
+        );
       }
 
       // Leer archivo como bytes
       final bytes = await imageFile.readAsBytes();
-      
+
       // Subir usando el método de bytes
       return await uploadImageBytes(bytes, extension);
     } catch (e) {
@@ -84,17 +86,22 @@ class StorageService {
       // Validar formato
       if (!_esFormatoValido(extension)) {
         throw Exception(
-            'Formato de imagen no válido. Solo se permiten: PNG, JPG, JPEG, HEIC, WEBP');
+          'Formato de imagen no válido. Solo se permiten: PNG, JPG, JPEG, HEIC, WEBP',
+        );
       }
 
       // Validar tamaño (máximo 5 MB)
       if (!_validarTamanioBytes(bytes)) {
-        throw Exception('La imagen es demasiado grande. Máximo permitido: 5 MB');
+        throw Exception(
+          'La imagen es demasiado grande. Máximo permitido: 5 MB',
+        );
       }
 
       // Generar nombre único para el archivo
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final randomStr = DateTime.now().microsecondsSinceEpoch.toString().substring(7);
+      final randomStr = DateTime.now().microsecondsSinceEpoch
+          .toString()
+          .substring(7);
       final fileName = '${timestamp}_$randomStr.$extension';
       final filePath = fileName;
 
@@ -131,4 +138,3 @@ class StorageService {
     }
   }
 }
-

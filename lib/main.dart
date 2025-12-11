@@ -7,18 +7,43 @@ import 'screens/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Cargar variables de entorno desde el archivo .env
-  await dotenv.load(fileName: ".env");
-  
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('⚠️ Advertencia: No se pudo cargar el archivo .env: $e');
+    print('💡 Asegúrate de crear un archivo .env en la raíz del proyecto con:');
+    print('   SUPABASE_URL=tu_url_de_supabase');
+    print('   SUPABASE_ANON_KEY=tu_clave_anonima');
+  }
+
+  // Validar que las variables de entorno estén configuradas
+  final supabaseUrl = dotenv.env['SUPABASE_URL']?.trim();
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']?.trim();
+
+  if (supabaseUrl == null || supabaseUrl.isEmpty) {
+    throw Exception(
+      'SUPABASE_URL no está configurada. Por favor, crea un archivo .env '
+      'en la raíz del proyecto con SUPABASE_URL=tu_url_de_supabase',
+    );
+  }
+
+  if (supabaseAnonKey == null || supabaseAnonKey.isEmpty) {
+    throw Exception(
+      'SUPABASE_ANON_KEY no está configurada. Por favor, crea un archivo .env '
+      'en la raíz del proyecto con SUPABASE_ANON_KEY=tu_clave_anonima',
+    );
+  }
+
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? '',
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
-  
+
   // Cargar sesión guardada si existe
   await AuthService().loadSession();
-  
+
   runApp(const MyApp());
 }
 
@@ -42,8 +67,6 @@ class MyApp extends StatelessWidget {
           onSecondary: Colors.white,
           surface: Colors.white,
           onSurface: Colors.black87,
-          background: Colors.white,
-          onBackground: Colors.black87,
           error: Colors.red,
           onError: Colors.white,
           brightness: Brightness.light,
@@ -78,11 +101,12 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: authService.isLoggedIn ? const ProductosScreen() : const LoginPage(),
+      home: authService.isLoggedIn
+          ? const ProductosScreen()
+          : const LoginPage(),
     );
   }
 }
-
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -128,9 +152,9 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 '@${user!.username}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
             ],

@@ -23,12 +23,8 @@ class ProductoService {
           ''')
           .eq('activo', true);
 
-      if (response == null) {
-        return [];
-      }
-
       final List<dynamic> data = response as List<dynamic>;
-      
+
       // Transformar los datos al formato Producto
       final productos = data
           .map((item) => Producto.fromJson(item as Map<String, dynamic>))
@@ -51,7 +47,7 @@ class ProductoService {
           .eq('id', productoId)
           .select();
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         return {
           'success': false,
           'error': 'No se recibió respuesta del servidor',
@@ -59,17 +55,10 @@ class ProductoService {
       }
 
       print('✅ [PRODUCTOS] Producto $productoId eliminado (soft delete)');
-      return {
-        'success': true,
-        'message': 'Producto eliminado correctamente',
-      };
+      return {'success': true, 'message': 'Producto eliminado correctamente'};
     } catch (error) {
       print('❌ [PRODUCTOS] Error al eliminar producto: $error');
-      return {
-        'success': false,
-        'error': error.toString(),
-      };
+      return {'success': false, 'error': error.toString()};
     }
   }
 }
-

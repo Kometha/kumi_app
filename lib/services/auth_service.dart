@@ -31,7 +31,7 @@ class AuthService {
   // Verificar contraseña comparando MD5
   bool _verifyPassword(String password, String passwordHash) {
     String passwordToCompare;
-    
+
     // Si la contraseña ingresada ya es un hash MD5, usarla directamente
     // Si no, generar el MD5 de la contraseña
     if (_isMD5Hash(password)) {
@@ -39,7 +39,7 @@ class AuthService {
     } else {
       passwordToCompare = _generateMD5(password);
     }
-    
+
     return passwordToCompare.toLowerCase() == passwordHash.toLowerCase();
   }
 
@@ -63,11 +63,11 @@ class AuthService {
         };
       }
 
-      final userData = response as Map<String, dynamic>;
+      final userData = response;
 
       // 2. Verificar contraseña usando MD5
       final passwordHash = userData['password_hash'] as String?;
-      
+
       if (passwordHash == null) {
         return {
           'success': false,
@@ -79,7 +79,7 @@ class AuthService {
       // Preparar contraseña para comparación
       String passwordToCompare;
       bool isInputMD5 = _isMD5Hash(password);
-      
+
       if (isInputMD5) {
         passwordToCompare = password;
       } else {
@@ -87,8 +87,9 @@ class AuthService {
       }
 
       // Comparar contraseñas
-      final passwordMatch = passwordToCompare.toLowerCase() == passwordHash.toLowerCase();
-      
+      final passwordMatch =
+          passwordToCompare.toLowerCase() == passwordHash.toLowerCase();
+
       if (!passwordMatch) {
         return {
           'success': false,
@@ -118,7 +119,8 @@ class AuthService {
             'userData_keys': userData.keys.toList(),
             'userData_id_type': userData['id'].runtimeType.toString(),
             'userData_id_value': userData['id'].toString(),
-            'userData_created_at_type': userData['created_at'].runtimeType.toString(),
+            'userData_created_at_type': userData['created_at'].runtimeType
+                .toString(),
             'userData_created_at_value': userData['created_at'].toString(),
           },
         };
@@ -184,4 +186,3 @@ class AuthService {
   // Verificar si hay sesión activa
   bool get isLoggedIn => _currentUser != null;
 }
-

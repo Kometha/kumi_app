@@ -12,12 +12,8 @@ class CategoriaService {
           .select('id, nombre, descripcion')
           .eq('activo', true);
 
-      if (response == null) {
-        return [];
-      }
-
       final List<dynamic> data = response as List<dynamic>;
-      
+
       // Transformar los datos al formato Categoria
       final categorias = data
           .map((item) => Categoria.fromJson(item as Map<String, dynamic>))
@@ -31,4 +27,3 @@ class CategoriaService {
     }
   }
 }
-
